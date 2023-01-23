@@ -1,0 +1,40 @@
+{
+  "name": "flotsam-autocomplete",
+  "version": "0.0.1",
+  "description": "no tears autocomplete",
+  "type": "module",
+  "source": "src/index.js",
+  "exports": {
+    "require": "./dist/flotsam.cjs",
+    "default": "./dist/flotsam.modern.js"
+  },
+  "main": "./dist/flotsam.cjs",
+  "module": "./dist/flotsam.module.js",
+  "unpkg": "./dist/flotsam.umd.js",
+  "scripts": {
+    "build": "microbundle",
+    "dev": "microbundle watch"
+  },
+  "keywords": [
+    "autocompelte",
+    "autocomplete",
+    "typeahead",
+    "type ahead"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kylegoines/flotsam.git"
+  },
+  "author": "kylegoines",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kylegoines/flotsam/issues"
+  },
+  "homepage": "https://github.com/kylegoines/flotsam#readme",
+  "devDependencies": {
+    "microbundle": "^0.15.1"
+  },
+  "dependencies": {
+    "prettier": "^2.8.3"
+  }
+}
