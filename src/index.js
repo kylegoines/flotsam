@@ -396,7 +396,7 @@ class floatsam {
         // add listener to onInput of input
         this.initInputCheck()
 
-        alert('kyletest!!!')
+        console.log('we are in dev mode')
 
         this.dispatch('init', {
             input: this.$input,
