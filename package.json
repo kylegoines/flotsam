@@ -1,6 +1,6 @@
 {
     "name": "flotsam-autocomplete",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "no tears autocomplete",
     "type": "module",
     "source": "src/index.js",
@@ -12,14 +12,18 @@
     "module": "./dist/flotsam.module.js",
     "unpkg": "./dist/flotsam.umd.js",
     "scripts": {
-        "build": "microbundle",
-        "dev": "microbundle watch"
+        "build": "microbundle --css",
+        "dev": "microbundle watch --css"
     },
     "keywords": [
-        "autocompelte",
         "autocomplete",
+        "auto complete",
+        "autocompelte",
         "typeahead",
-        "type ahead"
+        "type ahead",
+        "flotsam",
+        "flotsame",
+        "floatsome"
     ],
     "repository": {
         "type": "git",

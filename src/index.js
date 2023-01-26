@@ -1,8 +1,9 @@
 import EventComponent from './EventComponent'
+import './styles.css'
 
 const OPEN_CLASS = 'is-open'
 
-class floatsam extends EventComponent {
+class flotsam extends EventComponent {
     ////////////////////////////////////////////////////
     // construct
     ////////////////////////////////////////////////////
@@ -71,7 +72,7 @@ class floatsam extends EventComponent {
                     super.dispatch('loadingData', {
                         input: this.$input,
                         modal: this.$modal,
-                        floatsam: this,
+                        flotsam: this,
                         options: this.options,
                     })
                     this.onAjax(this.value).then((result) => {
@@ -80,7 +81,7 @@ class floatsam extends EventComponent {
                         super.dispatch('loadedData', {
                             input: this.$input,
                             modal: this.$modal,
-                            floatsam: this,
+                            flotsam: this,
                             options: this.options,
                         })
 
@@ -171,7 +172,7 @@ class floatsam extends EventComponent {
         super.dispatch('openModal', {
             input: this.$input,
             modal: this.$modal,
-            floatsam: this,
+            flotsam: this,
             options: this.options,
         })
     }
@@ -197,7 +198,7 @@ class floatsam extends EventComponent {
         super.dispatch('closeModal', {
             input: this.$input,
             modal: this.$modal,
-            floatsam: this,
+            flotsam: this,
             options: this.options,
         })
     }
@@ -255,7 +256,7 @@ class floatsam extends EventComponent {
                     selected: item.textContent,
                     input: this.$input,
                     modal: this.$modal,
-                    floatsam: this,
+                    flotsam: this,
                     options: this.options,
                 })
             } else {
@@ -370,7 +371,7 @@ class floatsam extends EventComponent {
         super.dispatch('disabled', {
             input: this.$input,
             modal: this.$modal,
-            floatsam: this,
+            flotsam: this,
             options: this.options,
         })
     }
@@ -412,11 +413,11 @@ class floatsam extends EventComponent {
             super.dispatch('init', {
                 input: this.$input,
                 modal: this.$modal,
-                floatsam: this,
+                flotsam: this,
                 options: this.options,
             })
         }, 0)
     }
 }
 
-export default floatsam
+export default flotsam

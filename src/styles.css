@@ -1,0 +1,27 @@
+.autocomplete-modal {
+    border: 1px solid black;
+    position: absolute;
+    width: 100%;
+    top: 100%;
+}
+
+.autocomplete-modal__inner {
+    padding: 0 24px;
+    max-height: 200px;
+    overflow: scroll;
+}
+
+.autocomplete-modal__list .selected-item {
+    background: pink;
+}
+
+.autocomplete-modal__empty {
+    max-height: 200px;
+    color: grey;
+    padding: 25px;
+    font-size: 14px;
+}
+
+.autocomplete-modal__list-highlight {
+    background: yellow;
+}

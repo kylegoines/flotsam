@@ -4,6 +4,8 @@
 
 _noun_
 
+hihihi
+
 -   the wreckage of a ship or its cargo found floating on or washed up by the sea.
 -   people or things that have been rejected and are regarded as worthless.
 -   A killer autocomplete libairy
@@ -30,6 +32,12 @@ To initialize flotsam in a project import it in the desired file!
 
 ```
 import flotsam from 'flotsam-autocomplete'
+```
+
+You'll also need some very basic styles, imported however you like to do that in your project:
+
+```
+import './node_modules/flotsam-autocomplete/dist/flotsam.css'
 ```
 
 and initailize it on the page with
@@ -64,8 +72,8 @@ There are no opinionaed styles on flotsom, thats up to you!
 ### Options
 
 ```javascript
-// a complex instance of floatsam
-const typeahead = new floatsam({
+// a complex instance of flotsam
+const typeahead = new flotsam({
     // input element oyu want to attach to
     el: document.querySelector('input'),
 
@@ -99,7 +107,7 @@ const typeahead = new floatsam({
 
 ### Events!
 
-Flotsome comes with an event bus to trigger your own crazy ideas! When you have access to the `const typeahead` variable you can listen to events with it
+Flotsom comes with an event bus to trigger your own crazy ideas! When you have access to the `const typeahead` variable you can listen to events with it
 
 ```javascript
 typeahead.on('init', (instanceData) => {
