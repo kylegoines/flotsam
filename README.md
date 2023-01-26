@@ -4,9 +4,9 @@
 
 _noun_
 
-- the wreckage of a ship or its cargo found floating on or washed up by the sea.
-- people or things that have been rejected and are regarded as worthless.
-- A killer autocomplete libairy
+-   the wreckage of a ship or its cargo found floating on or washed up by the sea.
+-   people or things that have been rejected and are regarded as worthless.
+-   A killer autocomplete libairy
 
 ---
 
@@ -48,14 +48,14 @@ The rendered html should look a lil' something like this
 
 ```javascript
 <div class="autocomplete-modal">
-  <div class="autocomplete-modal__inner">
-    <ul class="autocomplete-modal__list" role="combobox">
-      <li role="option">Rendered value 1</li>
-      <li role="option">Rendered value 2</li>
-      <li role="option">Rendered value 3</li>
-      ... ect
-    </ul>
-  </div>
+    <div class="autocomplete-modal__inner">
+        <ul class="autocomplete-modal__list" role="combobox">
+            <li role="option">Rendered value 1</li>
+            <li role="option">Rendered value 2</li>
+            <li role="option">Rendered value 3</li>
+            ... ect
+        </ul>
+    </div>
 </div>
 ```
 
@@ -103,23 +103,23 @@ Flotsome comes with an event bus to trigger your own crazy ideas! When you have 
 
 ```javascript
 typeahead.on('init', (instanceData) => {
-  console.log('modal init!')
+    console.log('modal init!')
 })
 
 typeahead.on('openModal', (instanceData) => {
-  console.log('modal opened')
+    console.log('modal opened')
 })
 
 typeahead.on('closeModal', (instanceData) => {
-  console.log('modal closed')
+    console.log('modal closed')
 })
 
 typeahead.on('selectKey', (instanceData) => {
-  console.log('modal item keyed')
+    console.log('modal item keyed')
 })
 
 typeahead.on('disabled', (instanceData) => {
-  console.log('modal item keyed')
+    console.log('modal item keyed')
 })
 ```
 
@@ -144,19 +144,46 @@ typeahead.Triggerdisable()
 
 So these are the most important part i think! Flotsom hijacks several key and functions while opened, to provide a holistic feature set much like the google autocomplete UI.
 
-- `Arrow Up` and `Arrow Down` keys allow you to select previous and next items while open
-- `Tab` will set the value, close the modal, but NOT submit (like google)
-- `Escape` will set the value, close the modal, but NOT submit (like google)
-- `Enter` will set the value, close the modal AND submit (like google)
+-   `Arrow Up` and `Arrow Down` keys allow you to select previous and next items while open
+-   `Tab` will set the value, close the modal, but NOT submit (like google)
+-   `Escape` will set the value, close the modal, but NOT submit (like google)
+-   `Enter` will set the value, close the modal AND submit (like google)
+
+---
+
+## Accessibility
+
+**SO** one of the main features of this libairy will be the porting of all the good work done at on https://github.com/alphagov/accessible-autocomplete to be ported from their react libairy to something we can use in vanilla js. I would way im about 80% there, outstanding are the alerts and assisitve text. But the end result will be to have 100% a11y parity with https://github.com/alphagov/accessible-autocomplete :)
+
+Any aay features beyond that, id be happy to include, leave an issue and some reasoning behind it.
 
 ---
 
 ## API
 
 If above was a bit too conversational for you, here are tables of the above information!
+(TODO!)
 
 ## options
 
 ## Events
 
 ## Triggers
+
+---
+
+## Roadmap
+
+I'm not done with this project! While the goal is to keep it lean i keep having shower ideas. Heres what's in for sure:
+
+-   100% a11y parity with https://github.com/alphagov/accessible-autocomplete
+-   Custom empty state option
+-   Assistive text for screen readers (using aira-describeby)
+-   Optional Empty state modal
+-   Outside click close (with option to disable that)
+
+### Nice to haves
+
+-   Custom filterBy and sortBy functions before we generate autocomplete list items
+-   Custom regex for the text highlight on autocomplete (make you do all the work!)
+-   Allow for custom html to be put in the dropdown (this would make some current features a bit more annoying - more docs ect)

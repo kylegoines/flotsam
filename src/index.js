@@ -1,48 +1,15 @@
-const modal = () => {
-    return `
-        <div class="autocomplete-modal we active">
-            <div class="autocomplete-modal__inner">
-                <ul class="autocomplete-modal__list" role="combobox">
-                </ul>
-            </div>
-        </div>
-    `
-}
+import EventComponent from './EventComponent'
 
 const OPEN_CLASS = 'is-open'
 
-// helper class to run event busing
-class DispatcherEvent {
-    constructor(eventName) {
-        this.eventName = eventName
-        this.callbacks = []
-    }
-
-    registerCallback(callback) {
-        this.callbacks.push(callback)
-    }
-
-    unregisterCallback(callback) {
-        const index = this.callbacks.indexOf(callback)
-        if (index > -1) {
-            this.callbacks.splice(index, 1)
-        }
-    }
-
-    fire(data) {
-        const callbacks = this.callbacks.slice(0)
-        callbacks.forEach((callback) => {
-            callback(data)
-        })
-    }
-}
-
-class floatsam {
+class floatsam extends EventComponent {
     ////////////////////////////////////////////////////
     // construct
     ////////////////////////////////////////////////////
     constructor(options) {
-        this.events = {}
+        // class inheritance setup
+        // adding core events module
+        super()
 
         // for debugging
         this.options = options
@@ -50,41 +17,16 @@ class floatsam {
         this.$input = options.el
         this.data = options.data ? options.data : false
         this.minChars = options.minChars ? options.minChars : 2
-        this.isOpen = false
-        this.isListEmpty = true
-        this.isFocused = false
-        this.inputPreview = true
+        this.inputPreview = options.inputPreview ? options.inputPreview : true
         this.onAjax = options.onAjax
+
+        this.isEmpty = true
+        this.hasEmptyState = true
+
+        // native state
+        this.isOpen = false
+
         this.init()
-    }
-
-    ////////////////////////////////////////////////////
-    // event trigger and listeners
-    ////////////////////////////////////////////////////
-    dispatch(eventName, data) {
-        const event = this.events[eventName]
-        if (event) {
-            event.fire(data)
-        }
-    }
-
-    on(eventName, callback) {
-        let event = this.events[eventName]
-        if (!event) {
-            event = new DispatcherEvent(eventName)
-            this.events[eventName] = event
-        }
-        event.registerCallback(callback)
-    }
-
-    off(eventName, callback) {
-        const event = this.events[eventName]
-        if (event && event.callbacks.indexOf(callback) > -1) {
-            event.unregisterCallback(callback)
-            if (event.callbacks.length === 0) {
-                delete this.events[eventName]
-            }
-        }
     }
 
     ////////////////////////////////////////////////////
@@ -95,24 +37,29 @@ class floatsam {
     setUp() {
         // add autocomplete off to input to not get in the way of dropdown
         this.$input.setAttribute('autocomplete', 'off')
+        this.$input.setAttribute('aira-expanded', 'false')
+        this.$input.setAttribute('aira-haspopup', 'listbox')
+        this.$input.setAttribute('role', 'combobox')
+        this.$input.setAttribute('aira-autocomplete', 'list')
+        this.$input.setAttribute('aira-owns', `modal-${super.uid}-list`)
+        this.$input.id = `autocomplete-input-${super.uid}`
     }
 
     initModal() {
         // append modal to the page
-        this.$input.insertAdjacentHTML('afterend', modal())
+        this.$input.insertAdjacentHTML('afterend', this.generateModal())
 
-        // grab an instance of it to use later
-        this.modal = document.querySelector('.autocomplete-modal')
-        this.list = this.modal.querySelector('.autocomplete-modal__list')
+        // grab an instance of elems to use later
+        this.$modal = document.querySelector(`#modal-${super.uid}`)
+        this.list = this.$modal.querySelector('.autocomplete-modal__list')
+        this.$empty = this.$modal.querySelector('.autocomplete-modal__empty')
 
         // intial modal styles
-        this.modal.style.pointerEvents = 'none'
-        this.modal.style.visibility = 'hidden'
+        this.$modal.style.pointerEvents = 'none'
+        this.$modal.style.visibility = 'hidden'
     }
 
     initInputCheck() {
-        // check the input
-
         if (this.isDisabled) return
 
         // if we want to use ajax we build a promise to get data
@@ -120,59 +67,84 @@ class floatsam {
             this.$input.addEventListener('input', (e) => {
                 this.value = e.target.value
 
-                if (this.value.length >= this.minChars) {
-                    this.dispatch('loadingData', {
+                if (this.minCharsExcceded()) {
+                    super.dispatch('loadingData', {
                         input: this.$input,
-                        modal: this.modal,
+                        modal: this.$modal,
                         floatsam: this,
                         options: this.options,
                     })
                     this.onAjax(this.value).then((result) => {
                         this.data = result
 
-                        this.dispatch('loadedData', {
+                        super.dispatch('loadedData', {
                             input: this.$input,
-                            modal: this.modal,
+                            modal: this.$modal,
                             floatsam: this,
                             options: this.options,
                         })
 
                         this.update()
                     })
-                } else {
+                } else if (this.isOpen) {
                     this.closeModal()
                 }
             })
         } else {
+            // else if we have static data lets just use that
             this.$input.addEventListener('input', (e) => {
                 this.value = e.target.value
-                if (this.value.length >= this.minChars) {
+                if (this.minCharsExcceded()) {
                     this.update()
+                } else if (this.isOpen) {
+                    this.closeModal()
                 }
             })
         }
     }
 
     update() {
-        // do all data updates here
+        // filter the data
+        if (this.data.length !== 0) {
+            this.data = this.data.filter((item) => {
+                if (item.toLowerCase().includes(this.value.toLowerCase())) {
+                    return item
+                }
+            })
+        }
 
-        // grab a copy of the current list so we can do some minipulation
-
-        if (this.data) {
-            console.log(this.value)
+        if (this.data.length === 0) {
+            this.showEmptyState()
+        } else {
+            // we have items remove the empty state
+            this.hideEmptyState()
             this.generateListItems()
 
             // this only triggers once then sets the modal to open state
             if (this.isOpen === false) {
                 this.openModal()
             }
-        } else {
-            this.closeModal()
         }
     }
 
     preventSubmit(e) {
         e.preventDefault()
+    }
+
+    showEmptyState() {
+        this.removeListItems()
+        const emptyHtml = `<div>Sorry there are no results for <strong>"${this.value}"</strong> please search again</div>`
+        this.$empty.innerHTML = emptyHtml
+        this.$empty.style.display = 'block'
+
+        if (!this.isOpen) {
+            this.openModal()
+        }
+    }
+
+    hideEmptyState() {
+        this.$empty.innerHTML = ''
+        this.$empty.style.display = 'none'
     }
 
     ////////////////////////////////////////////////////
@@ -184,45 +156,47 @@ class floatsam {
         if (this.isDisabled) return
 
         document.addEventListener('submit', this.preventSubmit)
-        console.log('adding keydown')
+
+        // this way lets us cleanly breakdown this event listener later
         this.checkKey = this.checkKey.bind(this)
         document.addEventListener('keydown', this.checkKey, true)
-
-        // styles and classes
-        this.modal.style.pointerEvents = 'auto'
-        this.modal.style.visibility = 'visible'
-        this.$input.classList.add(OPEN_CLASS)
-
         this.isOpen = true
 
-        this.dispatch('openModal', {
+        // styles and classes
+        this.$modal.style.pointerEvents = 'auto'
+        this.$modal.style.visibility = 'visible'
+        this.$input.classList.add(OPEN_CLASS)
+        this.$input.setAttribute('aira-expanded', 'true')
+
+        super.dispatch('openModal', {
             input: this.$input,
-            modal: this.modal,
+            modal: this.$modal,
             floatsam: this,
             options: this.options,
         })
     }
 
     closeModal() {
-        console.log('close list')
-        this.list.innerHTML = ''
-        this.currentSelected = null
+        // clean up the modal containers
+        this.hideEmptyState()
+        this.removeListItems()
+        this.unsetSelected()
+
         if (this.isOpen) {
             document.removeEventListener('submit', this.preventSubmit)
-            console.log('removing keydown')
             document.removeEventListener('keydown', this.checkKey, true)
         }
 
-        this.modal.style.pointerEvents = 'none'
-        this.modal.style.visibility = 'hidden'
+        this.$modal.style.pointerEvents = 'none'
+        this.$modal.style.visibility = 'hidden'
         this.$input.classList.remove(OPEN_CLASS)
         this.$input.focus()
 
         this.isOpen = false
 
-        this.dispatch('closeModal', {
+        super.dispatch('closeModal', {
             input: this.$input,
-            modal: this.modal,
+            modal: this.$modal,
             floatsam: this,
             options: this.options,
         })
@@ -263,24 +237,30 @@ class floatsam {
     ////////////////////////////////////////////////////
     selectItem() {
         const items = [...this.list.querySelectorAll('li')]
-        console.log(this.currentSelected)
         items.forEach((item, index) => {
             if (index === this.currentSelected) {
                 item.classList.add('selected-item')
+
+                // a11y features
+                item.setAttribute('aira-selected', 'true')
+                this.$input.setAttribute('aira-activedescendant', item.id)
+
+                // if prevew is on show the selected in the input box
                 if (this.inputPreview) {
-                    this.setInput(item.textContent)
+                    this.setInput(item.innerText)
                 }
 
                 // !!EVENT!! on select key
-                this.dispatch('selectKey', {
+                super.dispatch('selectKey', {
                     selected: item.textContent,
                     input: this.$input,
-                    modal: this.modal,
+                    modal: this.$modal,
                     floatsam: this,
                     options: this.options,
                 })
             } else {
                 item.classList.remove('selected-item')
+                item.setAttribute('aira-selected', 'false')
             }
         })
     }
@@ -291,6 +271,7 @@ class floatsam {
         } else {
             this.currentSelected = this.currentSelected + 1
         }
+
         this.selectItem()
     }
 
@@ -299,33 +280,56 @@ class floatsam {
         this.selectItem()
     }
 
-    ////////////////////////////////////////////////////
-    // render function for the list
-    // - runs on every data fetch
-    ////////////////////////////////////////////////////
+    unsetSelected() {
+        // unset selected
+        this.currentSelected = null
+        const items = [...this.list.querySelectorAll('li')]
+
+        // a11y feature
+        this.$input.removeAttribute('aira-activedescendant')
+
+        items.forEach((item) => {
+            item.classList.remove('selected-item')
+        })
+    }
+
+    generateModal() {
+        return `
+        <div class="autocomplete-modal" id="modal-${super.uid}" >
+            <div class="autocomplete-modal__inner">
+                <ul 
+                    class="autocomplete-modal__list" 
+                    role="listbox" 
+                    id="modal-${super.uid}-list">
+                </ul>
+                <div class="autocomplete-modal__empty" style="display: none"></div>
+            </div>
+        </div>
+    `
+    }
+
     generateListItems() {
+        // clean up the dropdown of selects
+        this.unsetSelected()
+
         let list = ``
 
-        if (!this.data) {
-            console.warn('no data!!!', this.value)
-            return
-        }
-
-        const filteredData = this.data.filter((item) => {
-            console.log(this.value)
-            if (item.toLowerCase().includes(this.value.toLowerCase())) {
-                return item
-            }
-        })
-
-        filteredData.forEach((item) => {
+        this.data.forEach((item, index) => {
             const regex = new RegExp(this.value, 'gi')
             const response = item.replace(regex, (str) => {
                 return (
-                    "<span style='background-color: yellow;'>" + str + '</span>'
+                    `<span class="autocomplete-modal__list-highlight">` +
+                    str +
+                    '</span>'
                 )
             })
-            list = list + `<li role="option">${response}</li>`
+            const posIndex = index + 1
+            list += `
+                <li class="autocomplete-modal__list-item" role="option" aria-posinset="${posIndex}" aira-selected="false" id="list-item--${this.uid}">
+                    <button tab-index="-1">
+                        ${response}
+                    </button>
+                </li>`
         })
 
         // append list to the screen
@@ -335,10 +339,15 @@ class floatsam {
         const listItems = [...this.list.querySelectorAll('li')]
         listItems.forEach((item) => {
             item.addEventListener('click', () => {
-                this.setInput(item.textContent)
+                this.setInput(item.innerText)
                 this.closeModal()
             })
         })
+    }
+
+    // quick way to breka down list
+    removeListItems() {
+        this.list.innerHTML = ''
     }
 
     ////////////////////////////////////////////////////
@@ -358,9 +367,9 @@ class floatsam {
     triggerDisable() {
         this.isDisabled = true
         this.closeModal()
-        this.dispatch('disabled', {
+        super.dispatch('disabled', {
             input: this.$input,
-            modal: this.modal,
+            modal: this.$modal,
             floatsam: this,
             options: this.options,
         })
@@ -385,7 +394,9 @@ class floatsam {
     // init fn - run on singleton creation
     ////////////////////////////////////////////////////
     init() {
-        this._self = this
+        this._self = this // so we can remove event listeners cleanly
+
+        // state
         this.currentSelected = null
         this.isDisabled = false
 
@@ -396,14 +407,15 @@ class floatsam {
         // add listener to onInput of input
         this.initInputCheck()
 
-        console.log('we are in dev mode')
-
-        this.dispatch('init', {
-            input: this.$input,
-            modal: this.modal,
-            floatsam: this,
-            options: this.options,
-        })
+        // bug not triggering right away, so set it to next cycle
+        setTimeout(() => {
+            super.dispatch('init', {
+                input: this.$input,
+                modal: this.$modal,
+                floatsam: this,
+                options: this.options,
+            })
+        }, 0)
     }
 }
 
