@@ -4,8 +4,6 @@
 
 _noun_
 
-hihihi
-
 -   the wreckage of a ship or its cargo found floating on or washed up by the sea.
 -   people or things that have been rejected and are regarded as worthless.
 -   A killer autocomplete libairy
@@ -14,9 +12,20 @@ hihihi
 
 ## Mission Statement
 
-After looking over the choices for autocomplete libs on npm i felt the choices for typeahead/autocomplete UI's there wasnt one simple enough with clear documentation, a modern event bus system, flexable with styles, that doesnt use jquery (im taking about you typeahead.js), with a small footprint (2kb), and still in active development. This should be able to handle solutions that need flexable ajax or static data with acessiable key controls. I kept key interactions as similar as google's typeahead as posisble.
+After looking over the choices for autocomplete libs on npm i felt that the choices for typeahead/autocomplete UI lacking one or more in the following areas:
 
-While this libary is every thing I need usually, it might not be everything you need. If you need image rendering, custom html injections in the list, need sub sections, subtitles ect, this isnt it. Checkout [@algolia/autocomplete-js](https://www.npmjs.com/package/@algolia/autocomplete-js) This beast will do it all.
+-   vetted acessibility standards
+-   simplicity, with clear documentation
+-   a modern event bus system
+-   flexible styling
+-   doesn't jquery (im taking about you typeahead.js),
+-   small footprint (<4kb)
+
+This library in essence is porting all the good work done at on https://github.com/alphagov/accessible-autocomplete from their react component. The end result will be 100% a11y parity with https://github.com/alphagov/accessible-autocomplete :)
+
+Any features beyond that, id be happy to include, leave an issue and some reasoning behind it.
+
+While this library is every thing I need usually, it might not be everything you need. If you need image rendering, custom html injections in the list, need sub-sections, sub-titles ect, this isnt it. Checkout [@algolia/autocomplete-js](https://www.npmjs.com/package/@algolia/autocomplete-js) This beast will do it all.
 
 ### Why flotsom?
 
@@ -49,7 +58,7 @@ const typeahead = new flotsam({
 })
 ```
 
-Now, when interacting with the input flotsom will render a absolutely positioned box under the input
+Now, when interacting with the input flotsom will render an absolutely positioned box under the input
 **for best results set the parent element to relaitive position so flotsom knows where to go!**
 
 The rendered html should look a lil' something like this
@@ -67,21 +76,21 @@ The rendered html should look a lil' something like this
 </div>
 ```
 
-There are no opinionaed styles on flotsom, thats up to you!
+There are no opinionated styles on flotsom, thats up to you!
 
 ### Options
 
 ```javascript
 // a complex instance of flotsam
 const typeahead = new flotsam({
-    // input element oyu want to attach to
+    // input element you want to attach to
     el: document.querySelector('input'),
 
     // static data formatted in an array, this is the data that will render on interaction
     data: ['lorem ipsum', 'lipsum', 'hello world', 'foo', 'bar', 'foo bar'],
 
     // the ajax implimentation -
-    // this allows oyu flexablity to pass your own promise to the render function
+    // this allows you flexablity to pass your own promise to the render function
     // textValue is the inputed value :)
     onAjax: (textValue) => {
         return axios
@@ -98,8 +107,8 @@ const typeahead = new flotsam({
     // this sets the minimum count of input characters before we will render the box
     minChars: 2,
 
-    // this is an interaction that google does that i thought i should include:
-    // when key-ing up or down, the input will fill with the previewed word
+    // this is an interaction that google input does that i thought i should include:
+    // when key-ing up or down, the input will fill with the previewed string
     inputPreview: true,
 
 })
@@ -143,27 +152,16 @@ typeahead.triggerClose()
 
 // disables flotsom
 typeahead.Triggerdisable()
-
-// trigger event wish list
-// disable, destory
 ```
 
 ### Keybaord controls
 
-So these are the most important part i think! Flotsom hijacks several key and functions while opened, to provide a holistic feature set much like the google autocomplete UI.
+Flotsom hijacks several keys while opened to provide a holistic feature set much like the google autocomplete UI.
 
 -   `Arrow Up` and `Arrow Down` keys allow you to select previous and next items while open
--   `Tab` will set the value, close the modal, but NOT submit (like google)
--   `Escape` will set the value, close the modal, but NOT submit (like google)
--   `Enter` will set the value, close the modal AND submit (like google)
-
----
-
-## Accessibility
-
-**SO** one of the main features of this libairy will be the porting of all the good work done at on https://github.com/alphagov/accessible-autocomplete to be ported from their react libairy to something we can use in vanilla js. I would way im about 80% there, outstanding are the alerts and assisitve text. But the end result will be to have 100% a11y parity with https://github.com/alphagov/accessible-autocomplete :)
-
-Any aay features beyond that, id be happy to include, leave an issue and some reasoning behind it.
+-   `Tab` will set the value, close the modal, but NOT submit (google-like)
+-   `Escape` will set the value, close the modal, but NOT submit (google-like)
+-   `Enter` will set the value, close the modal AND submit (google-like)
 
 ---
 
@@ -182,12 +180,12 @@ If above was a bit too conversational for you, here are tables of the above info
 
 ## Roadmap
 
-I'm not done with this project! While the goal is to keep it lean i keep having shower ideas. Heres what's in for sure:
+I'm not done with this project! While the goal is to keep it lean i keep having shower ideas. Here's what's in for sure:
 
 -   100% a11y parity with https://github.com/alphagov/accessible-autocomplete
 -   Custom empty state option
 -   Assistive text for screen readers (using aira-describeby)
--   Optional Empty state modal
+-   Optional empty state modal
 -   Outside click close (with option to disable that)
 
 ### Nice to haves
