@@ -21,6 +21,10 @@ class flotsam extends EventComponent {
         this.inputPreview = options.inputPreview ? options.inputPreview : true
         this.onAjax = options.onAjax
 
+        this.hint = options.hint
+            ? options.hint
+            : 'When autocomplete results are available use up and down arrows to review and enter to select.'
+
         this.isEmpty = true
         this.hasEmptyState = true
 
@@ -38,20 +42,27 @@ class flotsam extends EventComponent {
     setUp() {
         // add autocomplete off to input to not get in the way of dropdown
         this.$input.setAttribute('autocomplete', 'off')
-        this.$input.setAttribute('aira-expanded', 'false')
-        this.$input.setAttribute('aira-haspopup', 'listbox')
+        this.$input.setAttribute('aria-expanded', 'false')
+        this.$input.setAttribute('aria-haspopup', 'listbox')
         this.$input.setAttribute('role', 'combobox')
-        this.$input.setAttribute('aira-autocomplete', 'list')
-        this.$input.setAttribute('aira-owns', `modal-${super.uid}-list`)
-        this.$input.id = `autocomplete-input-${super.uid}`
+        this.$input.setAttribute('aria-autocomplete', 'list')
+        this.$input.setAttribute('aria-owns', `modal-${this.uid}-list`)
+        this.$input.id = `autocomplete-input-${this.uid}`
+        this.$input.setAttribute(
+            'aria-describedby',
+            `assistiveHint-${this.uid}`
+        )
     }
 
     initModal() {
         // append modal to the page
         this.$input.insertAdjacentHTML('afterend', this.generateModal())
+        this.$input.insertAdjacentHTML('afterend', this.generateAssistiveHint())
+        this.$input.insertAdjacentHTML('afterend', this.generateStatus())
 
         // grab an instance of elems to use later
-        this.$modal = document.querySelector(`#modal-${super.uid}`)
+        this.$modal = document.querySelector(`#modal-${this.uid}`)
+        this.$status = document.querySelector(`#status-${this.uid}`)
         this.list = this.$modal.querySelector('.autocomplete-modal__list')
         this.$empty = this.$modal.querySelector('.autocomplete-modal__empty')
 
@@ -102,6 +113,26 @@ class flotsam extends EventComponent {
                 }
             })
         }
+    }
+
+    ////////////////////////////////////////////////////
+    // init assisitve hint
+    ////////////////////////////////////////////////////
+
+    generateAssistiveHint() {
+        return `
+            <div id="assistiveHint-${this.uid}" style="display: none">
+                ${this.hint}
+            </div>
+        `
+    }
+
+    generateStatus() {
+        return `
+            <div id="status-${this.uid}" aria-role='status' aria-live="polite" style="display: none">
+                
+            </div>
+        `
     }
 
     update() {
@@ -167,7 +198,7 @@ class flotsam extends EventComponent {
         this.$modal.style.pointerEvents = 'auto'
         this.$modal.style.visibility = 'visible'
         this.$input.classList.add(OPEN_CLASS)
-        this.$input.setAttribute('aira-expanded', 'true')
+        this.$input.setAttribute('aria-expanded', 'true')
 
         super.dispatch('openModal', {
             input: this.$input,
@@ -243,8 +274,10 @@ class flotsam extends EventComponent {
                 item.classList.add('selected-item')
 
                 // a11y features
-                item.setAttribute('aira-selected', 'true')
-                this.$input.setAttribute('aira-activedescendant', item.id)
+                item.setAttribute('aria-selected', 'true')
+                console.log(item.id)
+                console.log(item)
+                this.$input.setAttribute('aria-activedescendant', item.id)
 
                 // if prevew is on show the selected in the input box
                 if (this.inputPreview) {
@@ -261,7 +294,7 @@ class flotsam extends EventComponent {
                 })
             } else {
                 item.classList.remove('selected-item')
-                item.setAttribute('aira-selected', 'false')
+                item.setAttribute('aria-selected', 'false')
             }
         })
     }
@@ -287,7 +320,7 @@ class flotsam extends EventComponent {
         const items = [...this.list.querySelectorAll('li')]
 
         // a11y feature
-        this.$input.removeAttribute('aira-activedescendant')
+        this.$input.removeAttribute('aria-activedescendant')
 
         items.forEach((item) => {
             item.classList.remove('selected-item')
@@ -295,13 +328,14 @@ class flotsam extends EventComponent {
     }
 
     generateModal() {
+        console.log(this.uid)
         return `
-        <div class="autocomplete-modal" id="modal-${super.uid}" >
+        <div class="autocomplete-modal" id="modal-${this.uid}" >
             <div class="autocomplete-modal__inner">
                 <ul 
                     class="autocomplete-modal__list" 
                     role="listbox" 
-                    id="modal-${super.uid}-list">
+                    id="modal-${this.uid}-list">
                 </ul>
                 <div class="autocomplete-modal__empty" style="display: none"></div>
             </div>
@@ -326,10 +360,8 @@ class flotsam extends EventComponent {
             })
             const posIndex = index + 1
             list += `
-                <li class="autocomplete-modal__list-item" role="option" aria-posinset="${posIndex}" aira-selected="false" id="list-item--${this.uid}">
-                    <button tab-index="-1">
-                        ${response}
-                    </button>
+                <li class="autocomplete-modal__list-item" role="option" aria-posinset="${posIndex}" aria-setsize="${this.data.length}" aria-selected="false" id="list-item-${index}--${this.uid}" tab-index="-1">
+                    ${response}
                 </li>`
         })
 
@@ -407,6 +439,8 @@ class flotsam extends EventComponent {
 
         // add listener to onInput of input
         this.initInputCheck()
+
+        console.log(this.uid)
 
         // bug not triggering right away, so set it to next cycle
         setTimeout(() => {
