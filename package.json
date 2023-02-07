@@ -1,6 +1,6 @@
 {
     "name": "flotsam-autocomplete",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "Accessibility first autocomplete without limiting style flexibility",
     "type": "module",
     "source": "src/index.js",
