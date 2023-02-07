@@ -23,7 +23,7 @@ class flotsam extends EventComponent {
 
         this.hint = options.hint
             ? options.hint
-            : 'When autocomplete results are available use up and down arrows to review and enter to select.'
+            : 'When autocomplete results are available, use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.'
 
         this.isEmpty = true
         this.hasEmptyState = true
@@ -47,7 +47,7 @@ class flotsam extends EventComponent {
         this.$input.setAttribute('role', 'combobox')
         this.$input.setAttribute('aria-autocomplete', 'list')
         this.$input.setAttribute('aria-owns', `modal-${this.uid}-list`)
-        this.$input.id = `autocomplete-input-${this.uid}`
+        this.$input.id = `flotsam-input-${this.uid}`
         this.$input.setAttribute(
             'aria-describedby',
             `assistiveHint-${this.uid}`
@@ -63,8 +63,8 @@ class flotsam extends EventComponent {
         // grab an instance of elems to use later
         this.$modal = document.querySelector(`#modal-${this.uid}`)
         this.$status = document.querySelector(`#status-${this.uid}`)
-        this.list = this.$modal.querySelector('.autocomplete-modal__list')
-        this.$empty = this.$modal.querySelector('.autocomplete-modal__empty')
+        this.list = this.$modal.querySelector('.flotsam-modal__list')
+        this.$empty = this.$modal.querySelector('.flotsam-modal__empty')
 
         // intial modal styles
         this.$modal.style.pointerEvents = 'none'
@@ -121,7 +121,7 @@ class flotsam extends EventComponent {
 
     generateAssistiveHint() {
         return `
-            <div id="assistiveHint-${this.uid}" style="display: none">
+            <div id="assistiveHint-${this.uid}" class="flotsam-modal__hint">
                 ${this.hint}
             </div>
         `
@@ -129,7 +129,7 @@ class flotsam extends EventComponent {
 
     generateStatus() {
         return `
-            <div id="status-${this.uid}" aria-role='status' aria-live="polite" style="display: none">
+            <div id="status-${this.uid}" aria-role='status' aria-live="polite" class="flotsam-modal__status">
                 
             </div>
         `
@@ -271,7 +271,7 @@ class flotsam extends EventComponent {
         const items = [...this.list.querySelectorAll('li')]
         items.forEach((item, index) => {
             if (index === this.currentSelected) {
-                item.classList.add('selected-item')
+                item.classList.add('flotsam-modal__selected-item')
 
                 // a11y features
                 item.setAttribute('aria-selected', 'true')
@@ -293,7 +293,7 @@ class flotsam extends EventComponent {
                     options: this.options,
                 })
             } else {
-                item.classList.remove('selected-item')
+                item.classList.remove('flotsam-modal__selected-item')
                 item.setAttribute('aria-selected', 'false')
             }
         })
@@ -323,21 +323,21 @@ class flotsam extends EventComponent {
         this.$input.removeAttribute('aria-activedescendant')
 
         items.forEach((item) => {
-            item.classList.remove('selected-item')
+            item.classList.remove('flotsam-modal__selected-item')
         })
     }
 
     generateModal() {
         console.log(this.uid)
         return `
-        <div class="autocomplete-modal" id="modal-${this.uid}" >
-            <div class="autocomplete-modal__inner">
+        <div class="flotsam-modal" id="modal-${this.uid}" >
+            <div class="flotsam-modal__inner">
                 <ul 
-                    class="autocomplete-modal__list" 
+                    class="flotsam-modal__list"
                     role="listbox" 
                     id="modal-${this.uid}-list">
                 </ul>
-                <div class="autocomplete-modal__empty" style="display: none"></div>
+                <div class="flotsam-modal__empty" style="display: none"></div>
             </div>
         </div>
     `
@@ -353,14 +353,14 @@ class flotsam extends EventComponent {
             const regex = new RegExp(this.value, 'gi')
             const response = item.replace(regex, (str) => {
                 return (
-                    `<span class="autocomplete-modal__list-highlight">` +
+                    `<span class="flotsam-modal__list-highlight">` +
                     str +
                     '</span>'
                 )
             })
             const posIndex = index + 1
             list += `
-                <li class="autocomplete-modal__list-item" role="option" aria-posinset="${posIndex}" aria-setsize="${this.data.length}" aria-selected="false" id="list-item-${index}--${this.uid}" tab-index="-1">
+                <li class="flotsam-modal__list-item" role="option" aria-posinset="${posIndex}" aria-setsize="${this.data.length}" aria-selected="false" id="list-item-${index}--${this.uid}" tab-index="-1">
                     ${response}
                 </li>`
         })

@@ -6,11 +6,11 @@ aria controls to ul
 input has  aria-activedescendant="list item"
 
 place under input
-<span id="autocomplete-minLength__assistiveHint" style="autocomplete-modal__sr-only">
+<span id="autocomplete-minLength__assistiveHint" class="flotsam-modal__hint">
     When autocomplete results are available, use up and down arrows to review and enter to select.  Touch device users, explore by touch or with swipe gestures.
 </span>
 
-input role="combobox"  aira-owns="modal"
+input role="combobox"  aria-owns="modal"
 
 
 aria-haspopup=listbox"
@@ -19,7 +19,7 @@ role="listbox"
 
 
 modal id="jump to results"
-    =>li item aira-selected true/false  with role="option"
+    =>li item aria-selected true/false  with role="option"
     => aria-posinset index
 
 
@@ -27,4 +27,4 @@ wrap with an button in the list item
 
 
 modal
-aira-hidden if empty
+aria-hidden if empty

@@ -1,32 +1,33 @@
-.autocomplete-modal {
-    border: 1px solid black;
+.flotsam-modal {
     position: absolute;
     width: 100%;
     top: 100%;
+    border: 1px solid var(--flotsam-border, black);
 }
 
-.autocomplete-modal__inner {
+.flotsam-modal__inner {
     padding: 0 24px;
     max-height: 200px;
     overflow: scroll;
 }
 
-.autocomplete-modal__list .selected-item {
-    background: pink;
+.flotsam-modal__list .flotsam-modal__selected-item {
+    background: var(--flotsam-selected, pink);
 }
 
-.autocomplete-modal__empty {
+.flotsam-modal__empty {
     max-height: 200px;
-    color: grey;
     padding: 25px;
+    color: var(--flotsam-empty, grey);
     font-size: 14px;
 }
 
-.autocomplete-modal__list-highlight {
-    background: yellow;
+.flotsam-modal__list-highlight {
+    background: var(--flotsam-highlight, yellow);
 }
 
-.autocomplete-modal__sr-only {
+.flotsam-modal__hint,
+.flotsam-modal__status {
     clip: rect(0 0 0 0);
     clip-path: inset(50%);
     height: 1px;
