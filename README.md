@@ -6,157 +6,186 @@ _noun_
 
 -   the wreckage of a ship or its cargo found floating on or washed up by the sea.
 -   people or things that have been rejected and are regarded as worthless.
--   A killer autocomplete libairy
+-   An a11y autocomplete library
 
 ---
 
 ## Mission Statement
 
-After looking over the choices for autocomplete libs on npm i felt that the choices for typeahead/autocomplete UI lacking one or more in the following areas:
+We felt that the existing choices for typeahead/autocomplete UI are lacking one or more in the following areas:
 
--   vetted acessibility standards
+-   vetted accessibility standards
 -   simplicity, with clear documentation
 -   a modern event bus system
 -   flexible styling
--   doesn't jquery (im taking about you typeahead.js),
+-   vanilla JS with no requirement for jQuery,
 -   small footprint (<4kb)
 
-This library in essence is porting all the good work done at on https://github.com/alphagov/accessible-autocomplete from their react component. The end result will be 100% a11y parity with https://github.com/alphagov/accessible-autocomplete :)
-
-Any features beyond that, id be happy to include, leave an issue and some reasoning behind it.
-
-While this library is every thing I need usually, it might not be everything you need. If you need image rendering, custom html injections in the list, need sub-sections, sub-titles ect, this isnt it. Checkout [@algolia/autocomplete-js](https://www.npmjs.com/package/@algolia/autocomplete-js) This beast will do it all.
-
-### Why flotsom?
-
-Have you every tried to search "autocomplete" on github or npm. Its the wild west out there
-
-On to the docs!
+This library is inspired and aims to build upon [alphagov/accessible-autocomplete](https://github.com/alphagov/accessible-autocomplete).
 
 ---
 
 ## Using Flotsam
 
-To initialize flotsam in a project import it in the desired file!
+Firstly, install via npm:
+
+```
+$ npm install flotsam-autocomplete
+```
+
+Import into your JavaScript by:
 
 ```
 import flotsam from 'flotsam-autocomplete'
 ```
 
-You'll also need some very basic styles, imported however you like to do that in your project:
+You'll also need some very basic styles - see (Styling)[#styling]
 
-```
-import './node_modules/flotsam-autocomplete/dist/flotsam.css'
-```
+### Static setup
 
-and initailize it on the page with
 
-```
+```JavaScript
 const typeahead = new flotsam({
+    // input element you want to attach to
     el: document.querySelector('input'),
-    data: [!!data here!!]
+    // static data formatted in an array, this is the data that will render on interaction
+    data: ['lorem ipsum', 'lipsum', 'hello world', 'foo', 'bar', 'foo bar'],
 })
 ```
 
-Now, when interacting with the input flotsom will render an absolutely positioned box under the input
-**for best results set the parent element to relaitive position so flotsom knows where to go!**
+### Dynamic setup
 
-The rendered html should look a lil' something like this
+```JavaScript
+let fetchController = new AbortController();
+let fetchSignal = fetchController.signal;
 
-```javascript
-<div class="autocomplete-modal">
-    <div class="autocomplete-modal__inner">
-        <ul class="autocomplete-modal__list" role="combobox">
-            <li role="option">Rendered value 1</li>
-            <li role="option">Rendered value 2</li>
-            <li role="option">Rendered value 3</li>
-            ... ect
-        </ul>
-    </div>
-</div>
-```
-
-There are no opinionated styles on flotsom, thats up to you!
-
-### Options
-
-```javascript
-// a complex instance of flotsam
 const typeahead = new flotsam({
     // input element you want to attach to
     el: document.querySelector('input'),
 
-    // static data formatted in an array, this is the data that will render on interaction
-    data: ['lorem ipsum', 'lipsum', 'hello world', 'foo', 'bar', 'foo bar'],
-
-    // the ajax implimentation -
-    // this allows you flexablity to pass your own promise to the render function
-    // textValue is the inputed value :)
+    // textValue is the input/search value 
     onAjax: (textValue) => {
+        fetchController.abort();
+        fetchController = new AbortController();
+        fetchSignal = fetchController.signal;
+
         return axios
-            .get(`https://dummyjson.com/users/${textValue}`)
-            .then((d) => {
-                // after we get data we format it into an array and pass it back to flotsom THANKS!
-                const users = d.data.users
-                return users.map((user) => {
-                    return user.firstName
-                })
+            const url = new URL('http://fakejsonendpoints.dev.area17.com/api/generic.php');
+            const params = {
+              q: textValue,
+            };
+            url.search = new URLSearchParams(params).toString();
+
+            fetch(
+              url, 
+              {
+                method: 'get',
+                signal: fetchSignal,
+                headers: {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json",
+                  "X-Requested-With": "XMLHttpRequest",
+                }
+              }
+            )
+            .then(response => {
+              try {
+                return response.json();
+              } catch(error) {
+                console.log('json error:', error, response);
+              }
             })
+            .then(data => {
+              // example output
+              return data.users.map(user => {
+                  return user.firstName;
+              });
+            })
+            .catch(error => {
+              console.log('fetch error:', error);
+            });
     }
+});
+```
+
+#### Options
+
+```JavaScript
+const typeahead = new flotsam({
+    el: document.querySelector('input'),
+    data: [...data],
 
     // this sets the minimum count of input characters before we will render the box
     minChars: 2,
 
-    // this is an interaction that google input does that i thought i should include:
     // when key-ing up or down, the input will fill with the previewed string
+    // defaults to false
     inputPreview: true,
-
 })
 ```
 
-### Events!
+### Events
 
-Flotsom comes with an event bus to trigger your own crazy ideas! When you have access to the `const typeahead` variable you can listen to events with it
+Flotsom triggers events on user interaction:
 
-```javascript
-typeahead.on('init', (instanceData) => {
-    console.log('modal init!')
-})
+```JavaScript
+const typeahead = new flotsam({
+    el: document.querySelector('input'),
+    data: [...data],
+});
 
-typeahead.on('openModal', (instanceData) => {
-    console.log('modal opened')
-})
+typeahead.addEventListener('init', instanceData => {
+    // flotsam init
+});
 
-typeahead.on('closeModal', (instanceData) => {
-    console.log('modal closed')
-})
+typeahead.addEventListener('openModal', (instanceData) => {
+    // modal opened
+});
 
-typeahead.on('selectKey', (instanceData) => {
-    console.log('modal item keyed')
-})
+typeahead.addEventListener('closeModal', (instanceData) => {
+    // modal closed
+});
 
-typeahead.on('disabled', (instanceData) => {
-    console.log('modal item keyed')
-})
+typeahead.addEventListener('selectKey', (instanceData) => {
+    // selected item
+});
+
+typeahead.addEventListener('loadingData', (instanceData) => {
+    // loading data
+});
+
+typeahead.addEventListener('loadedData', (instanceData) => {
+    // loaded
+});
+
+typeahead.addEventListener('disabled', (instanceData) => {
+    // flotsam disabled
+});
 ```
 
 `InstanceData` has access to the current, modal, input, options (readonly), and any other useful information i could think of!
 
-### Triggering methods!
+### Methods
 
-Flotsom also has some manual controls if you need them
+```JavaScript
+const typeahead = new flotsam({
+    el: document.querySelector('input'),
+    data: [...data],
+});
 
-```javascript
 // force close the flotsom
-typeahead.triggerClose()
+typeahead.triggerClose();
+
+// enables flotsom
+typeahead.triggerEnable();
 
 // disables flotsom
-typeahead.Triggerdisable()
+typeahead.triggerDisable();
 ```
 
-### Keybaord controls
+### Keyboard controls
 
-Flotsom hijacks several keys while opened to provide a holistic feature set much like the google autocomplete UI.
+Flotsom includes keyboard controls which follow the google autocomplete UI:
 
 -   `Arrow Up` and `Arrow Down` keys allow you to select previous and next items while open
 -   `Tab` will set the value, close the modal, but NOT submit (google-like)
@@ -165,31 +194,104 @@ Flotsom hijacks several keys while opened to provide a holistic feature set much
 
 ---
 
-## API
+## Styling
 
-If above was a bit too conversational for you, here are tables of the above information!
-(TODO!)
+The rendered HTML will look like:
 
-## options
+```HTML
+<div class="flotsam-modal">
+    <div class="flotsam-modal__inner">
+        <ul class="flotsam-modal__list" role="combobox">
+            <li role="option" class="flotsam-modal__list-item flotsam-modal__selected-item">Rendered value 1 (selected)</li>
+            <li role="option" class="flotsam-modal__list-item"><span class="flotsam-modal__list-highlight">Rendered value 2 (highlighted)</span></li>
+            <li role="option" class="flotsam-modal__list-item">Rendered value 3</li>
+        </ul>
+    </div>
+</div>
+<div id="assistiveHint-${this.uid}" class="flotsam-modal__hint">When autocomplete results are available, use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.</div>
+<div id="status-${this.uid}" aria-role='status' aria-live="polite" class="flotsam-modal__status"></div>
+```
 
-## Events
+The container of your `input` will need to have `position: relative;` in order to correctly position the dropdown.
 
-## Triggers
+Some basic styles can be included by importing:
 
----
+```
+import './node_modules/flotsam-autocomplete/dist/flotsam.css'
+```
+
+These styles come with colors set via CSS variables:
+
+```CSS
+:root {
+    --flotsam-border: black;
+    --flotsam-selected: pink;
+    --flotsam-empty: grey;
+    --flotsam-highlight: yellow;
+}
+```
+
+These styles really are basic:
+
+```CSS
+.flotsam-modal {
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    border: 1px solid var(--flotsam-border, black);
+}
+
+.flotsam-modal__inner {
+    padding: 0 24px;
+    max-height: 200px;
+    overflow: scroll;
+}
+
+.flotsam-modal__list .flotsam-modal__selected-item {
+    background: var(--flotsam-selected, pink);
+}
+
+.flotsam-modal__empty {
+    max-height: 200px;
+    padding: 25px;
+    color: var(--flotsam-empty, grey);
+    font-size: 14px;
+}
+
+.flotsam-modal__list-highlight {
+    background: var(--flotsam-highlight, yellow);
+}
+
+.flotsam-modal__hint,
+.flotsam-modal__status {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+```
+
+You will likely want to replace and write your own, but the imported styles will hopefully get you set up and started.
 
 ## Roadmap
 
-I'm not done with this project! While the goal is to keep it lean i keep having shower ideas. Here's what's in for sure:
-
--   100% a11y parity with https://github.com/alphagov/accessible-autocomplete
+-   100% a11y parity with [alphagov/accessible-autocomplete](https://github.com/alphagov/accessible-autocomplete)
 -   Custom empty state option
--   Assistive text for screen readers (using aira-describeby)
+-   Assistive text for screen readers (using `aria-describeby`)
 -   Optional empty state modal
 -   Outside click close (with option to disable that)
+-   Keep the project small in size
 
 ### Nice to haves
 
 -   Custom filterBy and sortBy functions before we generate autocomplete list items
--   Custom regex for the text highlight on autocomplete (make you do all the work!)
--   Allow for custom html to be put in the dropdown (this would make some current features a bit more annoying - more docs ect)
+-   Custom regex for the text highlight on autocomplete 
+
+---
+
+## Code of Conduct
+
+AREA 17 is dedicated to building a welcoming, diverse, safe community. We expect everyone participating in the AREA 17 community to abide by our [Code of Conduct](CODE_OF_CONDUCT.md). Please read it. Please follow it.
