@@ -69,41 +69,41 @@ const typeahead = new flotsam({
         fetchController = new AbortController();
         fetchSignal = fetchController.signal;
 
-        return axios
-            const url = new URL('http://fakejsonendpoints.dev.area17.com/api/generic.php');
-            const params = {
-              q: textValue,
-            };
-            url.search = new URLSearchParams(params).toString();
+        const url = new URL('http://fakejsonendpoints.dev.area17.com/api/generic.php');
+        const params = {
+          q: textValue,
+        };
+        url.search = new URLSearchParams(params).toString();
 
-            fetch(
-              url, 
-              {
-                method: 'get',
-                signal: fetchSignal,
-                headers: {
-                  "Content-Type": "application/json",
-                  "Accept": "application/json",
-                  "X-Requested-With": "XMLHttpRequest",
-                }
-              }
-            )
-            .then(response => {
-              try {
-                return response.json();
-              } catch(error) {
-                console.log('json error:', error, response);
-              }
-            })
-            .then(data => {
-              // example output
-              return data.users.map(user => {
-                  return user.firstName;
-              });
-            })
-            .catch(error => {
-              console.log('fetch error:', error);
-            });
+        return fetch(
+          url, 
+          {
+            method: 'get',
+            signal: fetchSignal,
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+              "X-Requested-With": "XMLHttpRequest",
+            }
+          }
+        )
+        .then(response => {
+          try {
+            return response.json();
+          } catch(error) {
+            console.log('json error:', error, response);
+          }
+        })
+        .then(data => {
+          // example output
+          return data.users.map(user => {
+              return user.firstName;
+          });
+        })
+        .catch(error => {
+          console.log('fetch error:', error);
+          return null;
+        });
     }
 });
 ```
@@ -214,13 +214,13 @@ The rendered HTML will look like:
 
 The container of your `input` will need to have `position: relative;` in order to correctly position the dropdown.
 
-Some basic styles can be included by importing:
+Some default styles can be included by importing:
 
 ```
 import './node_modules/flotsam-autocomplete/dist/flotsam.css'
 ```
 
-These styles come with colors set via CSS variables:
+These default styles come with colors set via CSS variables:
 
 ```CSS
 :root {
@@ -231,7 +231,7 @@ These styles come with colors set via CSS variables:
 }
 ```
 
-These styles really are basic:
+These default styles really are basic:
 
 ```CSS
 .flotsam-modal {
