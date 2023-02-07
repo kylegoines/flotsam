@@ -50,7 +50,7 @@ const typeahead = new flotsam({
     el: document.querySelector('input'),
     // static data formatted in an array, this is the data that will render on interaction
     data: ['lorem ipsum', 'lipsum', 'hello world', 'foo', 'bar', 'foo bar'],
-})
+});
 ```
 
 ### Dynamic setup
@@ -69,7 +69,7 @@ const typeahead = new flotsam({
         fetchController = new AbortController();
         fetchSignal = fetchController.signal;
 
-        const url = new URL('http://fakejsonendpoints.dev.area17.com/api/generic.php');
+        const url = new URL('http://fakejsonendpoints.dev.area17.com/api/autocomplete.php');
         const params = {
           q: textValue,
         };
@@ -95,14 +95,12 @@ const typeahead = new flotsam({
           }
         })
         .then(data => {
-          // example output
-          return data.users.map(user => {
-              return user.firstName;
-          });
+          // return data arr
+          return data;
         })
         .catch(error => {
           console.log('fetch error:', error);
-          return null;
+          return [];
         });
     }
 });
@@ -119,8 +117,14 @@ const typeahead = new flotsam({
     minChars: 2,
 
     // when key-ing up or down, the input will fill with the previewed string
-    // defaults to false
+    // defaults to true
     inputPreview: true,
+
+    // a11y instructions, defaults to:
+    hint: 'When autocomplete results are available, use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.',
+
+    // no results text, `::term::` is replaced with your search term
+    noResultsText: 'Sorry there are no results for ::term:: please search again',
 })
 ```
 
