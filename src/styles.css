@@ -3,12 +3,17 @@
     width: 100%;
     top: 100%;
     border: 1px solid var(--flotsam-border, black);
+    background-color: var(--flotsam-background, white);
 }
 
 .flotsam-modal__inner {
-    padding: 0 24px;
     max-height: 200px;
-    overflow: scroll;
+    overflow-y: scroll;
+}
+
+.flotsam-modal__list {
+    margin: 0;
+    padding: 0;
 }
 
 .flotsam-modal__list .flotsam-modal__selected-item {
