@@ -18,12 +18,16 @@ class flotsam extends EventComponent {
         this.$input = options.el
         this.data = options.data ? options.data : false
         this.minChars = options.minChars ? options.minChars : 2
-        this.inputPreview = options.inputPreview ? options.inputPreview : true
-        this.onAjax = options.onAjax
+        this.inputPreview = typeof(options.inputPreview) === 'boolean' ? options.inputPreview : true
+        this.onAjax = typeof(options.onAjax) === 'function' ? options.onAjax : null
 
         this.hint = options.hint
             ? options.hint
             : 'When autocomplete results are available, use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.'
+
+        this.noResultsText = options.noResultsText
+            ? options.noResultsText
+            : 'Sorry there are no results for ::term:: please search again.'
 
         this.isEmpty = true
         this.hasEmptyState = true
@@ -165,7 +169,8 @@ class flotsam extends EventComponent {
 
     showEmptyState() {
         this.removeListItems()
-        const emptyHtml = `<div>Sorry there are no results for <strong>"${this.value}"</strong> please search again</div>`
+        const str = this.noResultsText.replace('::term::', `<strong>"${this.value}"</strong>`)
+        const emptyHtml = `<div>${str}</div>`
         this.$empty.innerHTML = emptyHtml
         this.$empty.style.display = 'block'
 
@@ -275,8 +280,6 @@ class flotsam extends EventComponent {
 
                 // a11y features
                 item.setAttribute('aria-selected', 'true')
-                console.log(item.id)
-                console.log(item)
                 this.$input.setAttribute('aria-activedescendant', item.id)
 
                 // if prevew is on show the selected in the input box
@@ -328,7 +331,6 @@ class flotsam extends EventComponent {
     }
 
     generateModal() {
-        console.log(this.uid)
         return `
         <div class="flotsam-modal" id="modal-${this.uid}" >
             <div class="flotsam-modal__inner">
@@ -433,14 +435,18 @@ class flotsam extends EventComponent {
         this.currentSelected = null
         this.isDisabled = false
 
+        if (!this.data && !this.onAjax) {
+            this.isDisabled = true
+            console.error('flotsam: no data specified', this)
+            return
+        }
+
         this.setUp()
         // inject the modal onto the page and get an instance of it
         this.initModal()
 
         // add listener to onInput of input
         this.initInputCheck()
-
-        console.log(this.uid)
 
         // bug not triggering right away, so set it to next cycle
         setTimeout(() => {
