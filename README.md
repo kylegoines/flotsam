@@ -39,7 +39,7 @@ Import into your JavaScript by:
 import flotsam from 'flotsam-autocomplete'
 ```
 
-You'll also need some very basic styles - see (Styling)[#styling]
+You'll also need some very basic styles - see [Styling](#styling).
 
 ### Static setup
 
