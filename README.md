@@ -66,7 +66,7 @@ const typeahead = new flotsam({
     el: document.querySelector('input'),
 
     // textValue is the input/search value 
-    onAjax: (textValue) => {
+    getData: (textValue) => {
         fetchController.abort();
         fetchController = new AbortController();
         fetchSignal = fetchController.signal;
