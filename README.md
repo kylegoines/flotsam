@@ -158,7 +158,11 @@ typeahead.addEventListener('closeModal', (instanceData) => {
 });
 
 typeahead.addEventListener('selectKey', (instanceData) => {
-    // selected item
+    // selected item (with keyboard)
+});
+
+typeahead.addEventListener('resultClicked', (instanceData) => {
+    // result clicked/return key pressed on selected result
 });
 
 typeahead.addEventListener('loadingData', (instanceData) => {

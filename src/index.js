@@ -21,6 +21,7 @@ class flotsam extends EventComponent {
         this.inputPreview = typeof(options.inputPreview) === 'boolean' ? options.inputPreview : true
         this.getData = typeof(options.getData) === 'function' ? options.getData : null
         this.markResults = typeof(options.markResults) === 'boolean' ? options.markResults : true
+        this.submitOnReturn = typeof(options.submitOnReturn) === 'boolean' ? options.submitOnReturn : true
 
         this.hint = options.hint
             ? options.hint
@@ -270,8 +271,11 @@ class flotsam extends EventComponent {
         } else if (e.keyCode == '13') {
             // enter
             e.preventDefault()
+            this.resultClicked(this.currentSelected);
             this.closeModal()
-            this.$input.closest('form').submit()
+            if (this.submitOnReturn) {
+                this.$input.closest('form').submit()
+            }
         }
     }
 
@@ -359,7 +363,7 @@ class flotsam extends EventComponent {
         let list = ``
 
         this.filteredData.forEach((item, index) => {
-            let response = item;
+            let response = item
             if (this.markResults) {
                 const regex = new RegExp(this.value, 'gi')
                 response = item.replace(regex, (str) => {
@@ -382,9 +386,10 @@ class flotsam extends EventComponent {
 
         // now that list is on DOM add event listeners
         const listItems = [...this.list.querySelectorAll('li')]
-        listItems.forEach((item) => {
+        listItems.forEach((item, index) => {
             item.addEventListener('click', () => {
                 this.setInput(item.innerText)
+                this.resultClicked(index)
                 this.closeModal()
             })
         })
@@ -393,6 +398,26 @@ class flotsam extends EventComponent {
     // quick way to breka down list
     removeListItems() {
         this.list.innerHTML = ''
+    }
+
+    ////////////////////////////////////////////////////
+    // result clicked
+    ////////////////////////////////////////////////////
+    resultClicked(index) {
+        if (index) {
+            const item = this.list.querySelectorAll('li')[index]
+            if (item) {
+                // !!EVENT!! on return key
+                super.dispatch('resultClicked', {
+                    selected: item.textContent.trim(),
+                    value: this.value,
+                    input: this.$input,
+                    modal: this.$modal,
+                    //flotsam: this,
+                    //options: this.options,
+                })
+            }
+        }
     }
 
     ////////////////////////////////////////////////////
