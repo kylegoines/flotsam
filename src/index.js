@@ -16,7 +16,7 @@ class flotsam extends EventComponent {
         this.options = options
 
         this.$input = options.el
-        this.data = options.data ? options.data : false
+        this.data = options.data ? options.data : null
         this.minChars = options.minChars ? options.minChars : 2
         this.inputPreview = typeof(options.inputPreview) === 'boolean' ? options.inputPreview : true
         this.onAjax = typeof(options.onAjax) === 'function' ? options.onAjax : null
@@ -31,6 +31,7 @@ class flotsam extends EventComponent {
 
         this.isEmpty = true
         this.hasEmptyState = true
+        this.filteredData = []
 
         // native state
         this.isOpen = false
@@ -91,7 +92,7 @@ class flotsam extends EventComponent {
                         //options: this.options,
                     })
                     this.onAjax(this.value).then((result) => {
-                        this.data = result
+                        this.filteredData = result
 
                         super.dispatch('loadedData', {
                             input: this.$input,
@@ -100,7 +101,7 @@ class flotsam extends EventComponent {
                             //options: this.options,
                         })
 
-                        this.update()
+                        this.update(true)
                     })
                 } else if (this.isOpen) {
                     this.closeModal()
@@ -111,7 +112,7 @@ class flotsam extends EventComponent {
             this.$input.addEventListener('input', (e) => {
                 this.value = e.target.value
                 if (this.minCharsExcceded()) {
-                    this.update()
+                    this.update(false)
                 } else if (this.isOpen) {
                     this.closeModal()
                 }
@@ -139,17 +140,21 @@ class flotsam extends EventComponent {
         `
     }
 
-    update() {
-        // filter the data
-        if (this.data.length !== 0) {
-            this.data = this.data.filter((item) => {
-                if (item.toLowerCase().includes(this.value.toLowerCase())) {
-                    return item
-                }
-            })
+    update(ajaxed) {
+        if (!ajaxed) {
+            // filter the data
+            if (this.data && this.data.length !== 0) {
+                this.filteredData = [...this.data].filter((item) => {
+                    if (item.toLowerCase().includes(this.value.toLowerCase())) {
+                        return item
+                    }
+                })
+            } else {
+                this.filteredData = []
+            }
         }
 
-        if (this.data.length === 0) {
+        if (this.filteredData.length === 0) {
             this.showEmptyState()
         } else {
             // we have items remove the empty state
@@ -352,7 +357,7 @@ class flotsam extends EventComponent {
 
         let list = ``
 
-        this.data.forEach((item, index) => {
+        this.filteredData.forEach((item, index) => {
             const regex = new RegExp(this.value, 'gi')
             const response = item.replace(regex, (str) => {
                 return (
@@ -363,7 +368,7 @@ class flotsam extends EventComponent {
             })
             const posIndex = index + 1
             list += `
-                <li class="flotsam-modal__list-item" role="option" aria-posinset="${posIndex}" aria-setsize="${this.data.length}" aria-selected="false" id="list-item-${index}--${this.uid}" tab-index="-1">
+                <li class="flotsam-modal__list-item" role="option" aria-posinset="${posIndex}" aria-setsize="${this.filteredData.length}" aria-selected="false" id="list-item-${index}--${this.uid}" tab-index="-1">
                     ${response}
                 </li>`
         })
