@@ -1,14 +1,6 @@
-# Flotsam autocomplete
+# Flotsam autocomplete (deprecated)
 
-/ˈflätsəm/
-
-_noun_
-
--   the wreckage of a ship or its cargo found floating on or washed up by the sea.
--   people or things that have been rejected and are regarded as worthless.
--   A killer autocomplete libairy
-
----
+Hey! this project moved to [area 17](https://github.com/area17/flotsam), go wild there.
 
 ## Mission Statement
 
