@@ -117,7 +117,7 @@ const typeahead = new flotsam({
     el: document.querySelector('input'),
     data: [...data],
 
-    // this sets the minimum count of input characters before we will render the box
+    // this sets the minimum count of input characters before we will render the box, defaults to 2
     minChars: 2,
 
     // when key-ing up or down, the input will fill with the previewed string
