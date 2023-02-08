@@ -129,6 +129,9 @@ const typeahead = new flotsam({
 
     // no results text, `::term::` is replaced with your search term
     noResultsText: 'Sorry there are no results for ::term:: please search again',
+
+    // mark results in results, with `<mark>` tags, defaults to `true`
+    markResults: true,
 })
 ```
 
@@ -211,7 +214,7 @@ The rendered HTML will look like:
     <div class="flotsam-modal__inner">
         <ul class="flotsam-modal__list" role="combobox">
             <li role="option" class="flotsam-modal__list-item flotsam-modal__selected-item">Rendered value 1 (selected)</li>
-            <li role="option" class="flotsam-modal__list-item"><span class="flotsam-modal__list-highlight">Rendered value 2 (highlighted)</span></li>
+            <li role="option" class="flotsam-modal__list-item"><mark>Rendered value 2 (highlighted)</mark></li>
             <li role="option" class="flotsam-modal__list-item">Rendered value 3</li>
         </ul>
     </div>
@@ -235,7 +238,6 @@ These default styles come with colors set via CSS variables:
     --flotsam-border: black;
     --flotsam-selected: pink;
     --flotsam-empty: grey;
-    --flotsam-highlight: yellow;
 }
 ```
 
@@ -264,10 +266,6 @@ These default styles really are basic:
     padding: 25px;
     color: var(--flotsam-empty, grey);
     font-size: 14px;
-}
-
-.flotsam-modal__list-highlight {
-    background: var(--flotsam-highlight, yellow);
 }
 
 .flotsam-modal__hint,

@@ -20,6 +20,7 @@ class flotsam extends EventComponent {
         this.minChars = options.minChars ? options.minChars : 2
         this.inputPreview = typeof(options.inputPreview) === 'boolean' ? options.inputPreview : true
         this.getData = typeof(options.getData) === 'function' ? options.getData : null
+        this.markResults = typeof(options.markResults) === 'boolean' ? options.markResults : true
 
         this.hint = options.hint
             ? options.hint
@@ -358,14 +359,17 @@ class flotsam extends EventComponent {
         let list = ``
 
         this.filteredData.forEach((item, index) => {
-            const regex = new RegExp(this.value, 'gi')
-            const response = item.replace(regex, (str) => {
-                return (
-                    `<span class="flotsam-modal__list-highlight">` +
-                    str +
-                    '</span>'
-                )
-            })
+            let response = item;
+            if (this.markResults) {
+                const regex = new RegExp(this.value, 'gi')
+                response = item.replace(regex, (str) => {
+                    return (
+                        `<mark>` +
+                        str +
+                        '</mark>'
+                    )
+                })
+            }
             const posIndex = index + 1
             list += `
                 <li class="flotsam-modal__list-item" role="option" aria-posinset="${posIndex}" aria-setsize="${this.filteredData.length}" aria-selected="false" id="list-item-${index}--${this.uid}" tab-index="-1">

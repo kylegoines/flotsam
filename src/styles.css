@@ -31,10 +31,6 @@
     font-size: 14px;
 }
 
-.flotsam-modal__list-highlight {
-    background: var(--flotsam-highlight, yellow);
-}
-
 .flotsam-modal__hint,
 .flotsam-modal__status {
     clip: rect(0 0 0 0);
