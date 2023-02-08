@@ -1,7 +1,7 @@
 import EventComponent from './EventComponent'
 import './styles.css'
 
-const OPEN_CLASS = 'is-open'
+const OPEN_CLASS = 'flotsam-modal--is-open'
 
 class flotsam extends EventComponent {
     ////////////////////////////////////////////////////
