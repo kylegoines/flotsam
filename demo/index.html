@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Flotsam</title>
-  <link media="all" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/sunburst.min.css">
+  <link media="all" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/sunburst.min.css">
   <style>
     @import "../dist/flotsam.css";
 
@@ -216,6 +216,21 @@
       font-size: 0.875rem;
       line-height: 1.2;
       font-weight: 400;
+    }
+
+    pre {
+      display: block;
+    }
+
+    code {
+      display: inline-block;
+      background-color: #ddd;
+      color: #000;
+      vertical-align: middle;
+      padding: 2px 6px;
+    }
+
+    pre code {
       display: block;
       background-color: #1a1a1a;
       color: #f8f8f8;
@@ -268,7 +283,7 @@
     noResultsText: "Désolé, il n'y a pas de résultats pour ::term:: veuillez effectuer une nouvelle recherche",
   });</code></pre>
 
-    <h2 class="f-h2">Ajax data (via Fetch)</h2>
+    <h2 class="f-h2">Fuzzy static data search using <code>getData</code> and <code>fuzzysort</code></h2>
     <form novalidate>
       <fieldset>
         <div class="input-container">
@@ -277,12 +292,30 @@
         </div>
       </fieldset>
     </form>
+    <pre><code>const typeahead = new flotsam({
+    el: document.querySelectorAll('input'),
+    getData: (textValue) => {
+      const results = fuzzysort.go(textValue, data).map(result => result.target);
+      return new Promise((resolve, reject) => resolve(results));
+    },
+});</code></pre>
+    <p class="f-body">Uses <a href="https://github.com/farzher/fuzzysort" target="_blank">farzher/fuzzysort</a>. <br><strong>Note:</strong> <code>getData</code> requires you return a <code>Promise</code>.</p>
+
+    <h2 class="f-h2">Dynamic <code>getData</code> via <code>Fetch</code></h2>
+    <form novalidate>
+      <fieldset>
+        <div class="input-container">
+          <label for="q4">Query</label>
+          <input type="text" id="q4">
+        </div>
+      </fieldset>
+    </form>
     <pre><code>let fetchController = new AbortController();
 let fetchSignal = fetchController.signal;
 
 const typeahead = new flotsam({
     el: document.querySelectorAll('input'),
-    onAjax: (textValue) => {
+    getData: (textValue) => {
       fetchController.abort();
       fetchController = new AbortController();
       fetchSignal = fetchController.signal;
@@ -322,6 +355,7 @@ const typeahead = new flotsam({
       });
     },
 });</code></pre>
+
   </main>
   <footer>
     <ul>
@@ -334,7 +368,8 @@ const typeahead = new flotsam({
       </li>
     </ul>
   </footer>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/fuzzysort@2.0.4/fuzzysort.min.js"></script>
   <script>
     (async () => {
       const { default: flotsam } = await import("../dist/flotsam.modern.js");
@@ -357,12 +392,20 @@ const typeahead = new flotsam({
           noResultsText: "Désolé, il n'y a pas de résultats pour ::term:: veuillez effectuer une nouvelle recherche",
       });
 
+      const typeahead3 = new flotsam({
+          el: document.querySelectorAll('input')[2],
+          getData: (textValue) => {
+            const results = fuzzysort.go(textValue, data).map(result => result.target);
+            return new Promise((resolve, reject) => resolve(results));
+          },
+      });
+
       let fetchController = new AbortController();
       let fetchSignal = fetchController.signal;
 
-      const typeahead3 = new flotsam({
-          el: document.querySelectorAll('input')[2],
-          onAjax: (textValue) => {
+      const typeahead4 = new flotsam({
+          el: document.querySelectorAll('input')[3],
+          getData: (textValue) => {
             fetchController.abort();
             fetchController = new AbortController();
             fetchSignal = fetchController.signal;
@@ -403,17 +446,15 @@ const typeahead = new flotsam({
           },
       });
 
-      typeahead3.addEventListener('selectKey', (instanceData) => {
-         console.log('selectKey', instanceData);
-      });
-
       document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', e => {
           e.preventDefault();
         });
       });
 
-      hljs.highlightAll();
+      if (window.hljs) {
+        hljs.highlightAll();
+      }
     })();
   </script>
 </body>
