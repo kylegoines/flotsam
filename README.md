@@ -132,6 +132,9 @@ const typeahead = new flotsam({
 
     // mark results in results, with `<mark>` tags, defaults to `true`
     markResults: true,
+
+    // submit form on return key press, defaults to `true`
+    submitOnReturn: true,
 })
 ```
 
