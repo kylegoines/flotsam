@@ -1,6 +1,6 @@
 {
-    "name": "flotsam-autocomplete",
-    "version": "0.1.4",
+    "name": "@area17/flotsam-autocomplete",
+    "version": "1.0.0",
     "description": "Accessibility first autocomplete without limiting style flexibility",
     "type": "module",
     "source": "src/index.js",
@@ -27,14 +27,14 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/kylegoines/flotsam.git"
+        "url": "git+https://github.com/area17/flotsam.git"
     },
-    "author": "kylegoines",
+    "author": "A17 <dev@area17.com> (https://area17.com/)",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/kylegoines/flotsam/issues"
+        "url": "https://github.com/area17/flotsam/issues"
     },
-    "homepage": "https://github.com/kylegoines/flotsam#readme",
+    "homepage": "https://github.com/area17/flotsam#readme",
     "devDependencies": {
         "microbundle": "^0.15.1"
     },

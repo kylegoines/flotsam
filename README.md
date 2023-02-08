@@ -25,6 +25,12 @@ This library is inspired and aims to build upon [alphagov/accessible-autocomplet
 
 ---
 
+## Demo
+
+[http://flotsam.dev.area17.com/](http://flotsam.dev.area17.com/)
+
+---
+
 ## Using Flotsam
 
 Firstly, install via npm:
