@@ -87,8 +87,8 @@ class flotsam extends EventComponent {
                     super.dispatch('loadingData', {
                         input: this.$input,
                         modal: this.$modal,
-                        flotsam: this,
-                        options: this.options,
+                        //flotsam: this,
+                        //options: this.options,
                     })
                     this.onAjax(this.value).then((result) => {
                         this.data = result
@@ -96,8 +96,8 @@ class flotsam extends EventComponent {
                         super.dispatch('loadedData', {
                             input: this.$input,
                             modal: this.$modal,
-                            flotsam: this,
-                            options: this.options,
+                            //flotsam: this,
+                            //options: this.options,
                         })
 
                         this.update()
@@ -208,8 +208,8 @@ class flotsam extends EventComponent {
         super.dispatch('openModal', {
             input: this.$input,
             modal: this.$modal,
-            flotsam: this,
-            options: this.options,
+            //flotsam: this,
+            //options: this.options,
         })
     }
 
@@ -234,8 +234,8 @@ class flotsam extends EventComponent {
         super.dispatch('closeModal', {
             input: this.$input,
             modal: this.$modal,
-            flotsam: this,
-            options: this.options,
+            //flotsam: this,
+            //options: this.options,
         })
     }
     ////////////////////////////////////////////////////
@@ -289,11 +289,12 @@ class flotsam extends EventComponent {
 
                 // !!EVENT!! on select key
                 super.dispatch('selectKey', {
-                    selected: item.textContent,
+                    selected: item.textContent.trim(),
+                    value: this.value,
                     input: this.$input,
                     modal: this.$modal,
-                    flotsam: this,
-                    options: this.options,
+                    //flotsam: this,
+                    //options: this.options,
                 })
             } else {
                 item.classList.remove('flotsam-modal__selected-item')
@@ -405,8 +406,8 @@ class flotsam extends EventComponent {
         super.dispatch('disabled', {
             input: this.$input,
             modal: this.$modal,
-            flotsam: this,
-            options: this.options,
+            //flotsam: this,
+            //options: this.options,
         })
     }
 
@@ -453,8 +454,8 @@ class flotsam extends EventComponent {
             super.dispatch('init', {
                 input: this.$input,
                 modal: this.$modal,
-                flotsam: this,
-                options: this.options,
+                //flotsam: this,
+                //options: this.options,
             })
         }, 0)
     }
