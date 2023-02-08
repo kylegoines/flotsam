@@ -53,6 +53,8 @@ const typeahead = new flotsam({
 });
 ```
 
+**NB** currently filtering from a static list uses `[String.prototype.includes()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)` and so looks for exact string matches - e.g. "and" will match "and", "stand", "mandatory" etc.
+ 
 ### Dynamic setup
 
 ```JavaScript
@@ -105,6 +107,8 @@ const typeahead = new flotsam({
     }
 });
 ```
+
+**NB** Your Ajax'd list should be filtered by your remote server, so you can allow fuzzy or exact string matches
 
 #### Options
 
