@@ -19,7 +19,7 @@ class flotsam extends EventComponent {
         this.data = options.data ? options.data : null
         this.minChars = options.minChars ? options.minChars : 2
         this.inputPreview = typeof(options.inputPreview) === 'boolean' ? options.inputPreview : true
-        this.onAjax = typeof(options.onAjax) === 'function' ? options.onAjax : null
+        this.getData = typeof(options.getData) === 'function' ? options.getData : null
 
         this.hint = options.hint
             ? options.hint
@@ -79,8 +79,8 @@ class flotsam extends EventComponent {
     initInputCheck() {
         if (this.isDisabled) return
 
-        // if we want to use ajax we build a promise to get data
-        if (this.onAjax) {
+        // if we want to use ajax (or some other method of returning a promise) we build a promise to get data
+        if (this.getData) {
             this.$input.addEventListener('input', (e) => {
                 this.value = e.target.value
 
@@ -91,7 +91,7 @@ class flotsam extends EventComponent {
                         //flotsam: this,
                         //options: this.options,
                     })
-                    this.onAjax(this.value).then((result) => {
+                    this.getData(this.value).then((result) => {
                         this.filteredData = result
 
                         super.dispatch('loadedData', {
@@ -140,8 +140,8 @@ class flotsam extends EventComponent {
         `
     }
 
-    update(ajaxed) {
-        if (!ajaxed) {
+    update(dynamic) {
+        if (!dynamic) {
             // filter the data
             if (this.data && this.data.length !== 0) {
                 this.filteredData = [...this.data].filter((item) => {
@@ -441,7 +441,7 @@ class flotsam extends EventComponent {
         this.currentSelected = null
         this.isDisabled = false
 
-        if (!this.data && !this.onAjax) {
+        if (!this.data && !this.getData) {
             this.isDisabled = true
             console.error('flotsam: no data specified', this)
             return
