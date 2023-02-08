@@ -19,7 +19,7 @@ class EventComponent {
         }
     }
 
-    on(eventName, callback) {
+    addEventListener(eventName, callback) {
         let event = this.events[eventName]
         if (!event) {
             event = new DispatcherEvent(eventName)
@@ -28,7 +28,7 @@ class EventComponent {
         event.registerCallback(callback)
     }
 
-    off(eventName, callback) {
+    removeEventListener(eventName, callback) {
         const event = this.events[eventName]
         if (event && event.callbacks.indexOf(callback) > -1) {
             event.unregisterCallback(callback)
